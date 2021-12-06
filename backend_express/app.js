@@ -14,8 +14,12 @@ app.use("/api/users",usersRoutes);
 // app.post('/post',(req, res,next) => {
 //     res.send(req.body.username);
 // });
-// app.get('/',(req,res,next)=>{
-//     res.send('<form action="/post" method="POST"><input type="text" name="username"><button type="submit"></button></form>');
-// });
+app.use((error,req,res,next)=>{
+    if(res.headerSent){
+        return next(error);
+    }
+    res.status(error.code || 500);
+    res.json({message: error.message || "Unknown error occoured"});
+});
 
 app.listen(5000);
