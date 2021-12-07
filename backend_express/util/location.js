@@ -22,10 +22,10 @@ async function getCoordsForAddress(address) {
       'Could not find location for the specified address.',
       422
     );
-    
+
   }
 
-  return  data.results[0].geometry.location;
+  return data.results[0].geometry.location;
 
 
 }

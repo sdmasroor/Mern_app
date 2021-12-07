@@ -15,28 +15,28 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use("/api/places",placesRoutes);
+app.use("/api/places", placesRoutes);
 
-app.use("/api/users",usersRoutes);
+app.use("/api/users", usersRoutes);
 
-app.use((req, res,next) => {
+app.use((req, res, next) => {
   throw new HttpError("could not find the route", 404);
-  
+
 });
-app.use((error,req,res,next)=>{
-    if(res.headerSent){
-        return next(error);
-    }
-    res.status(error.code || 500);
-    res.json({message: error.message || "Unknown error occoured"});
+app.use((error, req, res, next) => {
+  if (res.headerSent) {
+    return next(error);
+  }
+  res.status(error.code || 500);
+  res.json({ message: error.message || "Unknown error occoured" });
 });
 mongoose
-.connect('mongodb://localhost:27017/Mern_db')
-.then(()=>{
-  console.log('Connected to database and server');
-  app.listen(5000);
-}).
-catch(err=>{
-  console.error(err);
-});
+  .connect('mongodb://localhost:27017/Mern_db')
+  .then(() => {
+    console.log('Connected to database and server');
+    app.listen(5000);
+  }).
+  catch(err => {
+    console.error(err);
+  });
 
