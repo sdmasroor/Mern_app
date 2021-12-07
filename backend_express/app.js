@@ -1,6 +1,8 @@
 
 const express = require('express');
 
+const mongoose = require('mongoose');
+
 const bodyParser = require('body-parser');
 
 const HttpError = require('./models/http-error');
@@ -28,5 +30,13 @@ app.use((error,req,res,next)=>{
     res.status(error.code || 500);
     res.json({message: error.message || "Unknown error occoured"});
 });
+mongoose
+.connect('mongodb://localhost:27017/Mern_db')
+.then(()=>{
+  console.log('Connected to database and server');
+  app.listen(5000);
+}).
+catch(err=>{
+  console.error(err);
+});
 
-app.listen(5000);

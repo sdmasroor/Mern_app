@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/',usersController.getUsers);
 
 router.post('/signup',[check('name').not().isEmpty(),
-check('email').isEmail(),
+check('email').normalizeEmail().isEmail(),
 check('password').isLength({min:5})],
 usersController.signup);
 
