@@ -22,7 +22,7 @@ const signup = async (req, res, next) => {
     if (!errors.isEmpty()) {
         throw new HttpError("Invalid Inputs", 422);
     }
-    const { name, email, password, image } = req.body;
+    const { name, email, password } = req.body;
     let hasUser;
     try {
         hasUser = await User.find({ email: email });
@@ -41,7 +41,7 @@ const signup = async (req, res, next) => {
         name,
         email,
         password,
-        image,
+        image:"image",
         places: []
     });
 
