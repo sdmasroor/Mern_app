@@ -65,7 +65,7 @@ const createdPlace = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid Inputs", 422));
   }
-  const { title, description, address, image, creator } = req.body;
+  const { title, description, address, creator } = req.body;
   let coordinates;
   try {
     coordinates = await getCoordsForAddress(address);
@@ -79,7 +79,7 @@ const createdPlace = async (req, res, next) => {
     description: description,
     location: coordinates,
     address: address,
-    image: image,
+    image: "image",
     creator: creator
   });
   let hasUser;
@@ -87,7 +87,7 @@ const createdPlace = async (req, res, next) => {
     hasUser = await User.findById(creator);
   }
   catch (err) {
-    return next(new HttpError("Error Creating the Place", 500));
+    return next(new HttpError("Error User Not Found", 500));
   }
   if (!hasUser) {
     return next(new HttpError("User Not Available", 500));
@@ -104,6 +104,7 @@ const createdPlace = async (req, res, next) => {
 
   }
   catch (err) {
+   
     return next(new HttpError("Error Creating the Place", 500));
   }
 
@@ -146,8 +147,9 @@ const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
   let place;
   try {
-    place = await Place.findById(placeId).populated('creator');
+    place = await Place.findById(placeId).populate('creator');
   } catch (err) {
+    console.log(err);
     const error = new HttpError("Something went wrong,Could not find place", 500);
 
     return next(error);

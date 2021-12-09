@@ -66,7 +66,7 @@ const Auth = () => {
     if (isLoginMode) {
 
       try {
-        await sendRequest('http://localhost:5000/api/users/login',
+       const response = await sendRequest('http://localhost:5000/api/users/login',
           'POST',
           JSON.stringify({
 
@@ -78,7 +78,7 @@ const Auth = () => {
           },
 
         );
-        auth.login();
+        auth.login(response.user.id);
       } catch (e) {
 
       }
@@ -89,7 +89,7 @@ const Auth = () => {
     } else {
       try {
 
-        await sendRequest('http://localhost:5000/api/users/signup',
+       const response = await sendRequest('http://localhost:5000/api/users/signup',
           'POST',
           JSON.stringify({
             name: formState.inputs.name.value,
@@ -102,7 +102,7 @@ const Auth = () => {
          
         );
        
-        auth.login();
+        auth.login(response.user.id);
       } catch (err) {
        
       }
@@ -144,7 +144,7 @@ const Auth = () => {
             id="password"
             type="password"
             label="Password"
-            validators={[VALIDATOR_MINLENGTH(5)]}
+            validators={[VALIDATOR_MINLENGTH(6)]}
             errorText="Please enter a valid password, at least 5 characters."
             onInput={inputHandler}
           />

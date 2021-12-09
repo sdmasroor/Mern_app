@@ -74,7 +74,7 @@ const login = async (req, res, next) => {
     if (!identifiedUser || identifiedUser.password !== password) {
         return next(new HttpError("could not find User", 401));
     }
-    res.json({ message: 'logged in!' })
+    res.json({ message: 'logged in!',user:identifiedUser.toObject({getters:true}) })
 };
 
 
