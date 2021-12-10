@@ -1,5 +1,7 @@
 const HttpError = require('../models/http-error');
 
+const fs = require('fs');
+
 const mongoose = require('mongoose');
 
 const { validationResult } = require('express-validator');
@@ -79,7 +81,7 @@ const createdPlace = async (req, res, next) => {
     description: description,
     location: coordinates,
     address: address,
-    image: "image",
+    image:req.file.path,
     creator: creator
   });
   let hasUser;
@@ -104,7 +106,7 @@ const createdPlace = async (req, res, next) => {
 
   }
   catch (err) {
-   
+  //  console.log(err);
     return next(new HttpError("Error Creating the Place", 500));
   }
 
@@ -159,6 +161,7 @@ const deletePlace = async (req, res, next) => {
 
     return next(error);
   }
+  const imagePath = place.image;
   try {
 
     const sessions = await mongoose.startSession();
@@ -173,6 +176,9 @@ const deletePlace = async (req, res, next) => {
 
     return next(error);
   }
+  fs.unlink(imagePath,err => {
+    console.log(err)
+  });
   res.status(200).json({ message: "Deleted Place" });
 };
 
