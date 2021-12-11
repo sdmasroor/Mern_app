@@ -106,7 +106,7 @@ const createdPlace = async (req, res, next) => {
 
   }
   catch (err) {
-  //  console.log(err);
+   console.log(err);
     return next(new HttpError("Error Creating the Place", 500));
   }
 

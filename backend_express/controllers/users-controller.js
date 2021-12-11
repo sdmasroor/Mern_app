@@ -3,6 +3,10 @@ const HttpError = require('../models/http-error');
 
 const { validationResult } = require('express-validator');
 
+const bcrypt = require('bcryptjs');
+
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
 
 const getUsers = async (req, res, next) => {
@@ -37,11 +41,21 @@ const signup = async (req, res, next) => {
 
         return next(new HttpError("Email already  registered", 401));
     }
+    let hashedPassword;
+try{
+    hashedPassword = await bcrypt.hash(password,12);
+}
+catch(e){
+    const error = new HttpError("Something went wrong,Could not Save User", 500);
+
+    return next(error);
+}
+   
     let createdUser = new User({
 
         name,
         email,
-        password,
+        password:hashedPassword,
         image:req.file.path,
         places: []
     });
@@ -53,7 +67,21 @@ const signup = async (req, res, next) => {
 
         return next(error);
     }
-    res.status(201).json({ user: createdUser.toObject({ getters: true }) });
+    let token;
+    try { 
+        token = jwt.sign({
+            userId:createdUser.id,
+            email:createdUser.email
+        },"supersecret_dont_share",
+        {expiresIn:'1h'}
+        );
+    }catch (err) {
+        const error = new HttpError("Something went wrong,Could not Save User", 500);
+
+        return next(error);
+    }
+   
+    res.status(201).json({ userId: createdUser.id,email: createdUser.email,token:token });
 };
 
 const login = async (req, res, next) => {
@@ -72,10 +100,41 @@ const login = async (req, res, next) => {
         return next(error);
     }
 
-    if (!identifiedUser || identifiedUser.password !== password) {
+    if (!identifiedUser) {
         return next(new HttpError("could not find User", 401));
     }
-    res.json({ message: 'logged in!',user:identifiedUser.toObject({getters:true}) })
+    let isValidPassword;
+    try{
+        isValidPassword = await bcrypt.compare(password,identifiedUser.password);
+    }
+    catch (err) {
+        const error = new HttpError("Invalid username or password", 500);
+
+        return next(error);
+    }
+    if(!isValidPassword){
+        const error = new HttpError("Invalid username or password", 500);
+
+        return next(error);
+    }
+    let token;
+    try { 
+        token = jwt.sign({
+            userId:identifiedUser.id,
+            email:identifiedUser.email
+        },"supersecret_dont_share",
+        {expiresIn:'1h'}
+        );
+    }catch (err) {
+        const error = new HttpError("Something went wrong,Could not login  User", 500);
+
+        return next(error);
+    }
+
+    res.json({ message: 'logged in!',
+    userId:identifiedUser.id,
+    email:identifiedUser.email,
+    token:token });
 };
 
 
