@@ -1,0 +1,11 @@
+{
+    "env":{
+        "DB_USER":"",
+        "DB_PASSWD":"",
+        "DB_HOST":"mongodb://localhost",
+        "DB_PORT":"27017",
+        "DB_NAME":"Mern_db",
+        "GOOGLE_API_KEY" : "AIzaSyDgLmMpKCzveJf1_yuA0fUzzhy0WRChvZA",
+        "JWT_KEY": "supersecret_dont_share"
+    }
+}

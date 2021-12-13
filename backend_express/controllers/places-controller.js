@@ -67,7 +67,7 @@ const createdPlace = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid Inputs", 422));
   }
-  const { title, description, address, creator } = req.body;
+  const { title, description, address } = req.body;
   let coordinates;
   try {
     coordinates = await getCoordsForAddress(address);
@@ -82,15 +82,17 @@ const createdPlace = async (req, res, next) => {
     location: coordinates,
     address: address,
     image:req.file.path,
-    creator: creator
+    creator: req.userData.userId
   });
   let hasUser;
   try {
-    hasUser = await User.findById(creator);
+    hasUser = await User.findById(req.userData.userId);
   }
   catch (err) {
+    
     return next(new HttpError("Error User Not Found", 500));
   }
+  console.log(req.userData.userId);
   if (!hasUser) {
     return next(new HttpError("User Not Available", 500));
   }
@@ -129,7 +131,11 @@ const updatePlace = async (req, res, next) => {
 
     return next(error);
   }
+  if(place.creator.toString() !== req.userData.userId){
+    const error = new HttpError("You are not allowed to update this record", 401);
 
+    return next(error);
+  }
   place.title = title;
 
   place.description = description;
@@ -156,8 +162,14 @@ const deletePlace = async (req, res, next) => {
 
     return next(error);
   }
+ 
   if (!place) {
     const error = new HttpError("Could not find place", 500);
+
+    return next(error);
+  }
+  if(place.creator.id !== req.userData.userId){
+    const error = new HttpError("You are not allowed to delete this record", 401);
 
     return next(error);
   }
