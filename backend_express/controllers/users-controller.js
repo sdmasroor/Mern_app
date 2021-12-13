@@ -39,7 +39,7 @@ const signup = async (req, res, next) => {
 
     if (hasUser.length) {
 
-        return next(new HttpError("Email already  registered", 401));
+        return next(new HttpError("Email already  registered", 403));
     }
     let hashedPassword;
 try{
@@ -72,7 +72,7 @@ catch(e){
         token = jwt.sign({
             userId:createdUser.id,
             email:createdUser.email
-        },"supersecret_dont_share",
+        },process.env.JWT_KEY,
         {expiresIn:'1h'}
         );
     }catch (err) {
@@ -101,7 +101,7 @@ const login = async (req, res, next) => {
     }
 
     if (!identifiedUser) {
-        return next(new HttpError("could not find User", 401));
+        return next(new HttpError("could not find User", 403));
     }
     let isValidPassword;
     try{
@@ -122,7 +122,7 @@ const login = async (req, res, next) => {
         token = jwt.sign({
             userId:identifiedUser.id,
             email:identifiedUser.email
-        },"supersecret_dont_share",
+        },process.env.JWT_KEY,
         {expiresIn:'1h'}
         );
     }catch (err) {

@@ -49,7 +49,8 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "Unknown error occoured" });
 });
 mongoose
-  .connect('mongodb://localhost:27017/Mern_db')
+  .connect(process.env.DB_HOST+":"+process.env.DB_PORT+"/"+process.env.DB_NAME)
+  // .connect('mongodb://localhost:27017/Mern_db')
   .then(() => {
     console.log('Connected to database and server');
     app.listen(5000);
